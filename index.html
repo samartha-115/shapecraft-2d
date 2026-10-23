@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Samartha R Jamadhagni">
+  <meta name="description" content="ShapeCraft 2D - Interactive 2D Shape & Color Sandbox by Samartha R Jamadhagni">
+  <title>ShapeCraft 2D - Interactive Shape & Color Sandbox</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- =========================================================================
+       APP HEADER / MAIN TOOLBAR
+       ========================================================================= -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="logo-badge" title="ShapeCraft 2D by Samartha R Jamadhagni">
+        <svg class="logo-icon-svg" viewBox="0 0 32 32" fill="none">
+          <rect x="3" y="15" width="12" height="12" rx="3" fill="#6366f1" />
+          <circle cx="21" cy="9" r="6" fill="#ec4899" />
+          <polygon points="21,17 28,27 14,27" fill="#f59e0b" />
+        </svg>
+        <span>ShapeCraft <span style="color: var(--primary);">2D</span></span>
+      </div>
+      <span class="badge-tag" title="Author: Samartha R Jamadhagni">by Samartha</span>
+    </div>
+
+    <!-- Center Navigation & Actions -->
+    <div class="header-center-tools">
+      <!-- Undo / Redo -->
+      <button class="tool-btn icon-only" id="undoBtn" title="Undo (Ctrl+Z)" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
+      </button>
+      <button class="tool-btn icon-only" id="redoBtn" title="Redo (Ctrl+Y)" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/></svg>
+      </button>
+
+      <div class="divider"></div>
+
+      <!-- Add Text Box Button -->
+      <button class="tool-btn" id="addTextBtn" title="Add a Text Box to the canvas">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        <span>+ Text Box</span>
+      </button>
+
+      <div class="divider"></div>
+
+      <!-- Snap to Grid & Align Structure to Center -->
+      <button class="tool-btn" id="snapGridBtn" title="Toggle Snap-to-Grid & Align Structure to Canvas Center">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Snap Grid (Center)</span>
+      </button>
+
+      <div class="divider"></div>
+
+      <!-- Reference Blueprints Trigger Button -->
+      <button class="tool-btn" id="toggleBlueprintRefBtn" title="Toggle Floating Reference Blueprint Guide">
+        <span style="font-size: 14px;">📐</span>
+        <span>Reference Blueprint</span>
+      </button>
+
+      <!-- View All 5 Blueprints Gallery Button -->
+      <button class="tool-btn" id="openGalleryBtn" title="View All 5 Blueprint Reference Images">
+        <span style="font-size: 14px;">🖼️</span>
+        <span>5 Blueprints</span>
+      </button>
+
+      <!-- Clear Canvas -->
+      <button class="tool-btn danger" id="clearCanvasBtn" title="Clear all shapes from canvas">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <span>Clear</span>
+      </button>
+    </div>
+
+    <!-- Right Controls: Save/Export, Theme Toggle & Sound -->
+    <div class="header-right-tools">
+      <!-- Project / Export Dropdown -->
+      <div class="dropdown" id="projectDropdown">
+        <button class="tool-btn primary" id="projectBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Export / Save ▾</span>
+        </button>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" id="exportPngBtn">🖼️ Export as PNG</button>
+          <button class="dropdown-item" id="exportJsonBtn">💾 Save Project (JSON)</button>
+          <button class="dropdown-item" id="importJsonBtn">📂 Load Project (JSON)</button>
+        </div>
+      </div>
+      <input type="file" id="projectFileInput" accept=".json" style="display: none;">
+
+      <!-- Sound Toggle -->
+      <button class="tool-btn icon-only" id="soundToggleBtn" title="Sound Effects Toggle">
+        <span id="soundIcon" style="font-size: 15px;">🔊</span>
+      </button>
+
+      <!-- Light / Dark Mode Switcher -->
+      <button class="theme-switch-btn" id="themeToggleBtn" title="Toggle Light / Dark Canvas Mode">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+        <div class="theme-switch-thumb"></div>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       MAIN WORKSPACE
+       ========================================================================= -->
+  <main class="app-workspace">
+
+    <!-- LEFT SIDEBAR: SHAPES DOCK -->
+    <aside class="shape-dock">
+      <div class="dock-header">
+        <span class="dock-title">Shape Library</span>
+        <span style="font-size: 0.72rem; color: var(--text-muted);">Drag or Click</span>
+      </div>
+
+      <div class="dock-content">
+        <!-- Section 1: Basic Shapes -->
+        <div>
+          <div class="dock-section-title">Geometric Primitives</div>
+          <div class="shape-grid">
+            <div class="shape-card" draggable="true" data-shape="square" title="Square">
+              <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+              <span class="shape-card-label">Square</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="rectangle" title="Rectangle">
+              <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="1"/></svg>
+              <span class="shape-card-label">Rect</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="rounded-rect" title="Rounded Rectangle">
+              <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="4"/></svg>
+              <span class="shape-card-label">Round</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="circle" title="Circle">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>
+              <span class="shape-card-label">Circle</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="ellipse" title="Ellipse">
+              <svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="5.5"/></svg>
+              <span class="shape-card-label">Ellipse</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="semi-circle" title="Semi-Circle">
+              <svg viewBox="0 0 24 24"><path d="M3 13 A9 9 0 0 1 21 13 Z"/></svg>
+              <span class="shape-card-label">Semi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Polygons & Angles -->
+        <div>
+          <div class="dock-section-title">Triangles & Polygons</div>
+          <div class="shape-grid">
+            <div class="shape-card" draggable="true" data-shape="triangle" title="Equilateral Triangle">
+              <svg viewBox="0 0 24 24"><polygon points="12,3 21,19 3,19"/></svg>
+              <span class="shape-card-label">Triangle</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="right-triangle" title="Right Triangle">
+              <svg viewBox="0 0 24 24"><polygon points="4,4 20,20 4,20"/></svg>
+              <span class="shape-card-label">Right-Tri</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="diamond" title="Diamond / Rhombus">
+              <svg viewBox="0 0 24 24"><polygon points="12,3 21,12 12,21 3,12"/></svg>
+              <span class="shape-card-label">Diamond</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="trapezoid" title="Trapezoid">
+              <svg viewBox="0 0 24 24"><polygon points="7,5 17,5 21,19 3,19"/></svg>
+              <span class="shape-card-label">Trapezoid</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="parallelogram" title="Parallelogram">
+              <svg viewBox="0 0 24 24"><polygon points="7,5 21,5 17,19 3,19"/></svg>
+              <span class="shape-card-label">Skew</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="hexagon" title="Hexagon">
+              <svg viewBox="0 0 24 24"><polygon points="12,3 20,7.5 20,16.5 12,21 4,16.5 4,7.5"/></svg>
+              <span class="shape-card-label">Hexagon</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="octagon" title="Octagon">
+              <svg viewBox="0 0 24 24"><polygon points="8,3 16,3 21,8 21,16 16,21 8,21 3,16 3,8"/></svg>
+              <span class="shape-card-label">Octagon</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="capsule" title="Capsule / Pill">
+              <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="8" rx="4"/></svg>
+              <span class="shape-card-label">Capsule</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="arch" title="Architectural Arch">
+              <svg viewBox="0 0 24 24"><path d="M4 20 L4 11 A8 8 0 0 1 20 11 L20 20 Z"/></svg>
+              <span class="shape-card-label">Arch</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Celestial & Decorative Art -->
+        <div>
+          <div class="dock-section-title">Creative & Decorative</div>
+          <div class="shape-grid">
+            <div class="shape-card" draggable="true" data-shape="star" title="5-Pointed Star">
+              <svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+              <span class="shape-card-label">Star</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="star-4" title="4-Pointed Sparkle">
+              <svg viewBox="0 0 24 24"><polygon points="12,2 14.5,9.5 22,12 14.5,14.5 12,22 9.5,14.5 2,12 9.5,9.5"/></svg>
+              <span class="shape-card-label">Sparkle</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="heart" title="Heart">
+              <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span class="shape-card-label">Heart</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="cloud" title="Cloud">
+              <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+              <span class="shape-card-label">Cloud</span>
+            </div>
+            <div class="shape-card" draggable="true" data-shape="crescent" title="Crescent Moon">
+              <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+              <span class="shape-card-label">Moon</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Typography & Labels -->
+        <div>
+          <div class="dock-section-title">Typography & Text</div>
+          <div class="shape-grid" style="grid-template-columns: 1fr;">
+            <div class="shape-card text-dock-card" draggable="true" data-shape="text" title="Click or Drag Text Box" style="aspect-ratio: 2.8 / 1; flex-direction: row; gap: 8px;">
+              <svg viewBox="0 0 24 24" style="width: 22px; height: 22px;"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+              <span class="shape-card-label" style="font-size: 0.75rem; font-weight: 600;">Text Box</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER CANVAS VIEWPORT -->
+    <section class="canvas-viewport" id="canvasViewport">
+      <canvas id="mainCanvas"></canvas>
+
+      <!-- Floating Selection Quick Action Bar -->
+      <div class="floating-selection-bar" id="floatingSelectionBar">
+        <button class="floating-btn" id="floatFrontBtn" title="Bring to Front (Shift + ])">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 4 4 12 8 12 8 20 16 20 16 12 20 12"/></svg>
+        </button>
+        <button class="floating-btn" id="floatBackBtn" title="Send to Back (Shift + [)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 20 20 12 16 12 16 4 8 4 8 12 4 12"/></svg>
+        </button>
+        <div class="divider"></div>
+        <button class="floating-btn" id="floatFlipHBtn" title="Flip Horizontal">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="3" x2="12" y2="21"/><polygon points="8 8 3 12 8 16"/><polygon points="16 8 21 12 16 16"/></svg>
+        </button>
+        <button class="floating-btn" id="floatFlipVBtn" title="Flip Vertical">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><polygon points="8 8 12 3 16 8"/><polygon points="8 16 12 21 16 16"/></svg>
+        </button>
+        <div class="divider"></div>
+        <button class="floating-btn" id="floatDupBtn" title="Duplicate (Ctrl+D)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <button class="floating-btn" id="floatEditBtn" title="Edit Text / Rename" style="display: none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+        <button class="floating-btn delete-btn" id="floatDelBtn" title="Delete Shape (Del / Backspace)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+
+      <!-- Floating Blueprint Reference Picture-in-Picture Card -->
+      <div class="blueprint-ref-card" id="blueprintRefCard">
+        <div class="blueprint-ref-header" id="blueprintRefCardHeader">
+          <div class="bp-header-title">
+            <span style="font-size: 14px;">📐</span>
+            <select class="bp-select" id="blueprintSelect">
+              <option value="cottage">🏡 Cozy Cottage</option>
+              <option value="rocket">🚀 Cosmic Rocket</option>
+              <option value="robot">🤖 Friendly Robot</option>
+              <option value="castle">🏰 Royal Fortress</option>
+              <option value="car">🚗 Speedy Cruiser</option>
+            </select>
+          </div>
+          <div class="bp-header-actions">
+            <button class="bp-action-btn" id="minimizeBlueprintRefBtn" title="Minimize / Expand">−</button>
+            <button class="bp-action-btn" id="closeBlueprintRefBtn" title="Close Reference Card">✕</button>
+          </div>
+        </div>
+        <div class="blueprint-ref-body" id="blueprintRefCardBody">
+          <div class="bp-img-wrapper">
+            <img id="blueprintRefImg" src="" alt="Reference Blueprint" class="bp-img">
+          </div>
+          <div class="bp-info-box" id="blueprintRefInfo"></div>
+        </div>
+      </div>
+
+      <!-- Canvas Zoom Overlay -->
+      <div class="canvas-overlay-controls">
+        <button class="tool-btn icon-only" id="zoomOutBtn" title="Zoom Out (-)">-</button>
+        <span class="zoom-label" id="zoomLevelLabel">100%</span>
+        <button class="tool-btn icon-only" id="zoomInBtn" title="Zoom In (+)">+</button>
+        <button class="tool-btn icon-only" id="zoomResetBtn" title="Reset View (100%)">⟲</button>
+      </div>
+    </section>
+
+    <!-- RIGHT SIDEBAR: COLOR STUDIO & PROPERTIES -->
+    <aside class="color-studio">
+      <!-- Target Mode: Fill vs Border Selection Cards -->
+      <div class="studio-section">
+        <div class="section-headline">
+          <span class="section-title">Color Target</span>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Select Paint Target</span>
+        </div>
+        <div class="color-target-cards-row">
+          <!-- Fill Color Selection Card -->
+          <div class="color-target-card active" id="targetFillBtn" title="Click to choose Fill Paint">
+            <div class="target-card-header">
+              <span class="target-card-label">Fill Paint</span>
+              <span class="target-active-pill">Active</span>
+            </div>
+            <div class="target-card-preview-row">
+              <div class="target-color-swatch-box" id="fillColorSwatch"></div>
+              <span class="target-hex-code" id="fillHexLabel">#6366F1</span>
+            </div>
+          </div>
+
+          <!-- Border Color Selection Card -->
+          <div class="color-target-card" id="targetStrokeBtn" title="Click to choose Border / Outline Color">
+            <div class="target-card-header">
+              <span class="target-card-label">Border Color</span>
+              <span class="target-active-pill">Active</span>
+            </div>
+            <div class="target-card-preview-row">
+              <div class="target-color-swatch-box border-style-box" id="strokeColorSwatch"></div>
+              <span class="target-hex-code" id="strokeHexLabel">#312E81</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full Spectrum Color Palette: 16.7M Colors -->
+      <div class="studio-section">
+        <div class="section-headline">
+          <span class="section-title">Spectrum Picker</span>
+          <button class="eyedropper-btn" id="eyedropperBtn" title="EyeDropper Screen Color Pick">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11l-8-8-8.5 8.5a2.121 2.121 0 0 0 0 3l3.5 3.5a2.121 2.121 0 0 0 3 0L19 11z"/><path d="m5 2l5 5"/><path d="M2 22l4-4"/></svg>
+          </button>
+        </div>
+
+        <div class="spectrum-box-wrapper">
+          <!-- Live Preview & Hex Input -->
+          <div class="spectrum-preview-row">
+            <div class="current-color-preview" id="currentColorPreview" title="Click to open system color dialog">
+              <input type="color" class="color-input-hidden" id="nativeColorInput" value="#6366f1">
+            </div>
+            <div class="color-readout-col">
+              <div class="hex-input-group">
+                <span>#</span>
+                <input type="text" class="hex-input-field" id="hexInput" value="6366F1" maxlength="6">
+              </div>
+            </div>
+          </div>
+
+          <!-- Continuous Hue Slider (Full 360° Color Spectrum) -->
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <span>Hue Spectrum</span>
+              <span id="hueVal">240°</span>
+            </div>
+            <input type="range" class="spectrum-slider" id="hueSlider" min="0" max="360" value="240">
+          </div>
+
+          <!-- Saturation Slider -->
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <span>Saturation / Vibrancy</span>
+              <span id="satVal">80%</span>
+            </div>
+            <input type="range" class="spectrum-slider" id="saturationSlider" min="0" max="100" value="80">
+          </div>
+
+          <!-- Lightness / Brightness Slider -->
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <span>Brightness</span>
+              <span id="lightVal">60%</span>
+            </div>
+            <input type="range" class="spectrum-slider" id="lightnessSlider" min="0" max="100" value="60">
+          </div>
+
+          <!-- Opacity / Alpha Slider -->
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <span>Opacity / Transparency</span>
+              <span id="opacityVal">100%</span>
+            </div>
+            <input type="range" class="spectrum-slider" id="opacitySlider" min="0" max="1" step="0.01" value="1">
+          </div>
+        </div>
+      </div>
+
+      <!-- Curated Thematic Palettes -->
+      <div class="studio-section">
+        <div class="section-headline">
+          <span class="section-title">Palettes</span>
+          <select class="prop-select" id="paletteSelect">
+            <option value="vibrant">Vibrant Pop</option>
+            <option value="pastel">Pastel Sweet</option>
+            <option value="cyberpunk">Cyber Neon</option>
+            <option value="nature">Earth & Nature</option>
+            <option value="monochrome">Monochrome & Slate</option>
+          </select>
+        </div>
+        <div class="swatch-grid" id="swatchGrid"></div>
+      </div>
+
+      <!-- Recent Swatches -->
+      <div class="studio-section">
+        <div class="section-headline">
+          <span class="section-title">Recent Colors</span>
+        </div>
+        <div class="swatch-grid" id="recentColorsGrid"></div>
+      </div>
+
+      <!-- Shape Stroke & Glow Styling with Dedicated Border Colour Option -->
+      <div class="studio-section">
+        <div class="section-headline">
+          <span class="section-title">Border & Glow Effects</span>
+        </div>
+
+        <!-- Direct Border Color Selection Option -->
+        <div class="property-row">
+          <span class="prop-label">Border Color</span>
+          <div class="direct-border-color-row">
+            <input type="color" id="borderColorDirectInput" value="#312e81" class="color-picker-mini" title="Pick Border Color">
+            <input type="text" class="prop-input-number" id="borderHexDirectInput" value="#312E81" style="width: 72px; text-transform: uppercase; font-family: monospace;">
+          </div>
+        </div>
+
+        <div class="property-row">
+          <span class="prop-label">Border Width</span>
+          <input type="number" class="prop-input-number" id="strokeWidthInput" min="0" max="30" value="2">
+        </div>
+
+        <div class="property-row">
+          <span class="prop-label">Border Style</span>
+          <select class="prop-select" id="strokeStyleSelect">
+            <option value="solid">Solid Line</option>
+            <option value="dashed">Dashed Pattern</option>
+          </select>
+        </div>
+
+        <div class="property-row">
+          <span class="prop-label">Shadow / Glow Radius</span>
+          <input type="number" class="prop-input-number" id="shadowBlurInput" min="0" max="50" value="0">
+        </div>
+
+        <div class="property-row">
+          <span class="prop-label">Glow Color</span>
+          <input type="color" id="shadowColorInput" value="#6366f1" class="color-picker-mini">
+        </div>
+      </div>
+
+      <!-- Text Typography & Content Section -->
+      <div class="studio-section" id="textPropertiesSection">
+        <div class="section-headline">
+          <span class="section-title">Text Options</span>
+          <span class="badge-tag" style="font-size: 0.6rem;">Text Tool</span>
+        </div>
+
+        <div class="property-row-vertical">
+          <label class="prop-label" for="textContentInput" style="margin-bottom: 4px; display: block;">Text Message</label>
+          <textarea class="prop-textarea" id="textContentInput" rows="2" placeholder="Type text here..."></textarea>
+        </div>
+
+        <div class="property-row">
+          <span class="prop-label">Font Family</span>
+          <select class="prop-select" id="fontFamilySelect" style="max-width: 150px;">
+            <option value="Inter, sans-serif">Modern (Inter)</option>
+            <option value="'Impact', sans-serif">Bold (Impact)</option>
+            <option value="'Comic Sans MS', cursive, sans-serif">Playful (Comic)</option>
+            <option value="'Courier New', monospace">Code (Monospace)</option>
+            <option value="'Georgia', serif">Classic (Georgia)</option>
+          </select>
+        </div>
+
+        <div class="property-row">
+          <span class="prop-label">Font Size</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="range" id="fontSizeSlider" min="14" max="96" value="32" style="width: 75px;">
+            <input type="number" class="prop-input-number" id="fontSizeInput" min="10" max="140" value="32" style="width: 50px;">
+          </div>
+        </div>
+
+        <div class="property-row">
+          <span class="prop-label">Formatting</span>
+          <div class="text-format-btn-group">
+            <button class="format-btn" id="textBoldBtn" title="Toggle Bold"><b>B</b></button>
+            <button class="format-btn" id="textItalicBtn" title="Toggle Italic"><i>I</i></button>
+            <div class="divider" style="height: 18px; margin: 0 4px;"></div>
+            <button class="format-btn" id="textAlignLeftBtn" title="Align Left">⫷</button>
+            <button class="format-btn active" id="textAlignCenterBtn" title="Align Center">≡</button>
+            <button class="format-btn" id="textAlignRightBtn" title="Align Right">⫸</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- =========================================================================
+       STATUS BAR / FOOTER
+       ========================================================================= -->
+  <footer class="app-footer">
+    <div class="footer-left">
+      <span class="status-pill">
+        <span class="indicator-dot"></span>
+        <span id="shapeCountLabel">0 shapes</span>
+      </span>
+      <span id="selectedShapeInfoLabel">No shape selected</span>
+    </div>
+
+    <div class="footer-center" style="display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--text-muted);">
+      <span>Crafted by <strong style="color: var(--text-primary); font-weight: 600;">Samartha R Jamadhagni</strong></span>
+    </div>
+
+    <div class="footer-right">
+      <span class="interactive-hint">
+        <kbd>Space</kbd> + Drag to pan
+      </span>
+      <span class="interactive-hint">
+        <kbd>Del</kbd> to remove
+      </span>
+      <button class="tool-btn icon-only" id="shortcutsBtn" title="Keyboard Shortcuts" style="height: 24px; width: 24px; font-size: 11px;">
+        ?
+      </button>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MODALS: Shortcuts, Clear Confirmation & 5 Blueprints Gallery
+       ========================================================================= -->
+  <!-- 5 Blueprints Reference Gallery Modal -->
+  <div class="modal-overlay" id="blueprintGalleryModal">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.25rem;">📐</span>
+          <div>
+            <h3 class="modal-title">Blueprint Reference Library</h3>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">5 Reference Images to Inspire Your Drawings</span>
+          </div>
+        </div>
+        <button class="tool-btn icon-only modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 8px;">
+          Select any blueprint below to keep it in your floating reference guide while you construct and color your 2D design on the canvas:
+        </p>
+        <div class="blueprint-gallery-grid" id="blueprintGalleryGrid"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="tool-btn primary modal-close">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay" id="shortcutsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Keyboard Shortcuts & Controls</h3>
+        <button class="tool-btn icon-only modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="shortcut-list">
+          <div class="shortcut-item"><span>Select Shape</span><kbd>Click</kbd></div>
+          <div class="shortcut-item"><span>Move / Drag</span><kbd>Drag</kbd></div>
+          <div class="shortcut-item"><span>Resize Shape</span><kbd>Corner Handles</kbd></div>
+          <div class="shortcut-item"><span>Rotate Shape</span><kbd>Top Green Handle</kbd></div>
+          <div class="shortcut-item"><span>Duplicate</span><kbd>Ctrl + D</kbd></div>
+          <div class="shortcut-item"><span>Delete</span><kbd>Del / Backspace</kbd></div>
+          <div class="shortcut-item"><span>Undo</span><kbd>Ctrl + Z</kbd></div>
+          <div class="shortcut-item"><span>Redo</span><kbd>Ctrl + Y</kbd></div>
+          <div class="shortcut-item"><span>Bring to Front</span><kbd>Shift + ]</kbd></div>
+          <div class="shortcut-item"><span>Send to Back</span><kbd>Shift + [</kbd></div>
+          <div class="shortcut-item"><span>Nudge Position</span><kbd>Arrow Keys</kbd></div>
+          <div class="shortcut-item"><span>Pan Canvas</span><kbd>Space + Drag</kbd></div>
+          <div class="shortcut-item"><span>Zoom</span><kbd>Mouse Wheel</kbd></div>
+          <div class="shortcut-item"><span>Constrain Ratio</span><kbd>Shift + Resize</kbd></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content: space-between;">
+        <span style="font-size: 0.76rem; color: var(--text-muted);">
+          Author: <strong style="color: var(--text-primary); font-weight: 600;">Samartha R Jamadhagni</strong>
+        </span>
+        <button class="tool-btn primary modal-close">Got it!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear Canvas Confirmation Modal -->
+  <div class="modal-overlay" id="clearConfirmModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Clear Entire Canvas?</h3>
+        <button class="tool-btn icon-only modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>This will erase all current 2D shapes from your drawing board. You can still use <kbd>Ctrl+Z</kbd> to undo if needed.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="tool-btn modal-close">Cancel</button>
+        <button class="tool-btn danger" id="confirmClearBtn">Yes, Clear Canvas</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/shapes.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/canvas.js"></script>
+  <script src="js/color.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
